@@ -9,14 +9,19 @@ import SwiftUI
 
 struct ContentView: View {
     @FocusState private var inputFocus:Bool
-    @State private var totalAmount = 0
+    @State private var totalAmount = 0.0
     @State private var totalPeople = 2
     let tipOptions = [10,15,20,25]
     @State private var defaultTip = 20
+    var result:Double{
+        let total = Double(totalAmount)
+        let people = Double(totalPeople)
+        let percent:Double = Double(defaultTip+100)/100
+        return total*percent/people
+    }
+    
    
-
-   
-    var body: some View {
+       var body: some View {
         NavigationView{
             Form{
                 Section{
@@ -27,6 +32,7 @@ struct ContentView: View {
                 }header: {
                     Text("total amount")
                 }
+                
                 Section{
                     TextField("How many people", value: $totalPeople, format:
                         .number)
@@ -36,25 +42,34 @@ struct ContentView: View {
                 }header: {
                     Text("How many people")
                 }
+                
                 Section{
                     Picker("Tip", selection: $defaultTip) {
                         ForEach(tipOptions, id:\.self){
-                            Text(String($0)) // format % olarak ayarlanacak
+                            Text($0, format: .percent)
                         }
                     }.pickerStyle(.segmented)
                 }header: {
                     Text("tip percentage")
                 }
+                Section{
+                    Text(result, format: .currency(code: Locale.current.currencyCode ?? "USD"))
+                }header: {
+                    Text("each wıll pay")
+                }
                 
-            }.navigationTitle("CheckSplit")
+            }.navigationTitle(Text("CheckSplit"))
+                .toolbar{ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done"){
+                      inputFocus = false
+                    }
+                }}
         }
  
     }
             
 }
-
-
-
 
 
 struct ContentView_Previews: PreviewProvider {
